@@ -5,6 +5,50 @@
 
 
 
+		<!-- Button to Open the Modal -->
+<button @click="modificar=false; abrirModal();" type="button" class="btn btn-primary">
+  Nuevo
+</button>
+
+<!-- The Modal -->
+<div class="modal" :class="{mostrar:modal}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">{{tituloModal}}</h4>
+        <button @click="cerrarModal();" type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+      	<div>
+      		<label for="nombre"></label>
+          <input v-model="articulo.nombre" type="text" class="form-control" id="nombre" placeholder="Nombre del Articulo"></input>
+      	</div>
+      	<div>
+      		<label for="descripcion"></label>
+          <input v-model="articulo.descripcion" type="text" class="form-control" id="descripcion" placeholder="Descripcion del Articulo"></input>
+      	</div>
+      	<div>
+      		<label for="stock"></label>
+          <input v-model="articulo.stock" type="number" class="form-control" id="stock" placeholder="Stock"></input>
+      	</div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button @click="cerrarModal();" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button @click="cerrarModal();" type="button" class="btn btn-success" data-dismiss="modal">Guardar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
 		<table class="table table-striped">
   <thead class="thead-dark">
     <tr>
@@ -22,7 +66,7 @@
       <td>{{art.descripcion}}</td>
       <td>{{art.stock}}</td>
       <td>
-      	<button class="btn btn-warning">Editar</button>
+      	<button @click="modificar=true; abrirModal(art);" class="btn btn-warning">Editar</button>
       </td>
       <td>
       	<button @click="eliminar(art.id)" class="btn btn-danger">Eliminar</button>
@@ -36,6 +80,15 @@
 	export default {
 		data() {
 			return {
+				articulo:{
+					nombre:'Arroz',
+					descripcion:'Paca',
+					stock:1,
+
+				},
+				modificar:true,
+				modal:0,
+				tituloModal : '',
 				articulos: [],
 			}
 		},
@@ -48,6 +101,23 @@
 				const res = await axios.delete('/articulos/'+id);
 				this.listar();
 			},
+			abrirModal (data={}){
+				this.modal = 1;
+				if(this.modificar){
+					this.tituloModal = "Modificar Articulo";
+					this.articulo.nombre = data.nombre;
+					this.articulo.descripcion = data.descripcion;
+					this.articulo.stock = data.stock;
+				}else {
+					this.tituloModal = "Crear Articulo";
+					this.articulo.nombre = '';
+					this.articulo.descripcion = '';
+					this.articulo.stock = 1;
+				}
+			},
+			cerrarModal (){
+				this.modal = 0;
+			},
 		},
 
 		created(){
@@ -56,5 +126,9 @@
 	}
 </script>
 <style>
-	
+.mostrar{
+	display: list-item;
+	opacity: 1;
+	background: rgba(44,38,75,0.849);
+}
 </style>
